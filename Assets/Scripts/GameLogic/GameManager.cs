@@ -6,11 +6,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour, IGameManager
 {
-	[SerializeField] private GameScoresManager gameScoresManager;
-	[SerializeField] private CountdownTimer cdTimer;
-	[SerializeField] private int ApplesGoal;
+	[SerializeField] private AnimalManager animalManager;
 
-	EventBus eventBus;
 	public event EventHandler GameOver;
 
 	private AudioSource audioSource;
@@ -18,7 +15,6 @@ public class GameManager : MonoBehaviour, IGameManager
 	private void Start()
 	{
 		audioSource = GetComponent<AudioSource>();
-		cdTimer.Expired += CdTimer_Expired;
 	}
 
 	private void CdTimer_Expired(object sender, EventArgs e)
@@ -28,8 +24,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
 	public void PlayGame()
 	{
-		gameScoresManager.ResetScores();
-		cdTimer.Go();
+
 	}
 
 	public void PauseGame()
@@ -45,5 +40,19 @@ public class GameManager : MonoBehaviour, IGameManager
 	public void StopGame()
 	{
 		throw new NotImplementedException();
+	}
+
+	private void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			StartCoroutine(nextQuestion());
+		}
+	}
+
+	private IEnumerator nextQuestion()
+	{
+		yield return StartCoroutine(animalManager.NextQuest());
+		yield return StartCoroutine(animalManager.ShowAnimals());
 	}
 }
