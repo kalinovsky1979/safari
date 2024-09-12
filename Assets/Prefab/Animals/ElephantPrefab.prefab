@@ -103,12 +103,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1474366255810468570, guid: 30f92dd0b07d805478f056b032183046,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113797721717150884, guid: 30f92dd0b07d805478f056b032183046,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4282602798614112029, guid: 30f92dd0b07d805478f056b032183046,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520884169737975703, guid: 30f92dd0b07d805478f056b032183046,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6281986858691049718, guid: 30f92dd0b07d805478f056b032183046,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7554121964819697500, guid: 30f92dd0b07d805478f056b032183046,
         type: 3}
       propertyPath: m_Name
       value: Elephant
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6281986858691049718, guid: 30f92dd0b07d805478f056b032183046, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

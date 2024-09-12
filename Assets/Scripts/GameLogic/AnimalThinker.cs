@@ -27,8 +27,6 @@ public class AnimalThinker : MonoBehaviour
 		transform.position = pos;
 		originalScale = transform.localScale;
 
-		Debug.Log(transform.position);
-
 		if (animateScale == null)
 		{
 			animateScale = new AnimateVector3();
