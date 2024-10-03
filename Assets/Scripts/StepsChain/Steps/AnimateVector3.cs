@@ -18,10 +18,11 @@ public class AnimateVector3 : StaticStepBase
 
 	public override void Stop()
 	{
-		throw new NotImplementedException();
+		elapsedTime = 0;
+		isAnimating = false;
 	}
 
-	public override bool update(ChainRunner prg)
+	public override bool update(ChainRunner prg = null)
 	{
 		if (!isAnimating)
 		{

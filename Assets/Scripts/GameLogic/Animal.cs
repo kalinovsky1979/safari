@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.InputManagerEntry;
 
-public class AnimalThinker : MonoBehaviour
+public class Animal : MonoBehaviour
 {
+	[SerializeField] private AnimalInfo animalInfo;
+	public AnimalInfo AnimalInfo => animalInfo;
 
 	private AnimateVector3 animateScale;
+	private AnimateVector3 moveAnimal;
 
 	private Vector3 originalScale;
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		
+		moveAnimal = new AnimateVector3();
+		moveAnimal.duration = 1.0f;
 	}
 
 	// Update is called once per frame
@@ -22,10 +26,27 @@ public class AnimalThinker : MonoBehaviour
 		
 	}
 
+	private void OnEnable()
+	{
+		originalScale = transform.localScale;
+	}
+
+	public IEnumerator Move(Vector3 target)
+	{
+		moveAnimal.valueA = transform.position;
+		moveAnimal.valueB = target;
+		moveAnimal.OnAnimationStep = (pos) =>
+		{
+			transform.position = pos;
+		};
+
+		while(moveAnimal.update(null))
+			yield return null;
+	}
+
 	public IEnumerator AppearCoroutine(Vector3 pos)
 	{
 		transform.position = pos;
-		originalScale = transform.localScale;
 
 		if (animateScale == null)
 		{

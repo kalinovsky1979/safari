@@ -1,27 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class AnimalManager : MonoBehaviour
 {
-	[SerializeField] private Transform animalPointA;
-	[SerializeField] private Transform animalPointB;
+	//[SerializeField] private Transform animalPointA;
+	//[SerializeField] private Transform animalPointB;
 
-	[SerializeField] private AnimalThinker[] animalPrefabs;
+	[SerializeField] private Transform animalPositionBase;
+	[SerializeField] private Transform animalPositionScene;
 
-	private AnimalThinker[] animalsInstances = null;
-	private List<AnimalThinker> selectedAnimals;
+	[SerializeField] private Animal[] animals;
 
-	private AnimalThinker animalDropped;
+	private Animal[] animalsInstances = null;
+	private List<Animal> selectedAnimals;
+
+	private Animal animalCurrent;
+	public Animal AnimalCurrent => animalCurrent;
 
 	private Vector3[] animalPositions;
+
+	private RandomList<Animal> animalRandomList;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		animalsInstances = null;
 		animalPositions = null;
+
+		animalRandomList = new RandomList<Animal>(animals
+			.Select(a => { a.transform.position = animalPositionBase.position; a.transform.rotation = Quaternion.identity; return a; })
+			.ToArray(), canRepeatTwice: false);
 	}
 
 	// Update is called once per frame
@@ -30,83 +41,101 @@ public class AnimalManager : MonoBehaviour
 		
 	}
 
-	public IEnumerator HideAnimalsExceptDropped()
+	public IEnumerator NextAnimal()
 	{
-		yield return null;
+		if (trasiting) yield break;
+		if (animalsShown) yield break;
+
+		trasiting = true;
+		animalsShown = true;
+		animalCurrent = animalRandomList.Next();
+		animalCurrent.gameObject.transform.position = animalPositionBase.position;
+
+		yield return StartCoroutine(animalCurrent.Move(animalPositionScene.position));
+
+		trasiting = false;
 	}
 
-	public IEnumerator HideDroppedAnimal()
+	public IEnumerator AwayAnimal()
 	{
-		yield return null;
+		if(trasiting) yield break;
+		if(!animalsShown) yield break;
+		trasiting = true;
+		animalsShown = false;
+		yield return StartCoroutine(animalCurrent.Move(animalPositionBase.position));
+		trasiting = false;
 	}
+
+	//public IEnumerator HideAnimalRow()
+	//{
+	//	if(!animalsShown) yield break;
+	//	animalsShown = false;
+
+	//	foreach (var animal in selectedAnimals)
+	//	{
+	//		yield return StartCoroutine(animal.DisappearCoroutine());
+	//	}
+	//}
 
 	private bool animalsShown = false;
+	private bool trasiting = false;
 
-	public IEnumerator ShowAnimals()
-	{
-		if(animalsShown) yield break;
+	//public IEnumerator ShowAnimals()
+	//{
+	//	if(animalsShown) yield break;
 
-		animalsShown = true;
+	//	animalsShown = true;
 
-		int iPoint = 0;
-		foreach (var animal in selectedAnimals)
-		{
-			yield return StartCoroutine(animal.AppearCoroutine(animalPositions[iPoint]));
-			iPoint++;
-		}
-	}
+	//	int iPoint = 0;
+	//	foreach (var animal in selectedAnimals)
+	//	{
+	//		yield return StartCoroutine(animal.AppearCoroutine(animalPositions[iPoint]));
+	//		iPoint++;
+	//	}
+	//}
 
-	public IEnumerator NextQuest()
-	{
-		newAnimalsSelection();
+	//public IEnumerator NextAnimalRow()
+	//{
+	//	newAnimalsRow();
 
-		yield return null;
-	}
+	//	yield return null;
+	//}
 
-	private void newAnimalsSelection()
-	{
-		if (animalPositions == null)
-			animalPositions = calculatePositionsBetween(animalPointA.position, animalPointB.position, 5);
+	//private void newAnimalsRow()
+	//{
+	//	if (animalPositions == null)
+	//		animalPositions = calculatePositionsBetween(animalPointA.position, animalPointB.position, 5);
 
-		if (animalsInstances == null)
-		{
-			animalsInstances = new AnimalThinker[animalPrefabs.Length];
+	//	if (animalsInstances == null)
+	//	{
+	//		animalsInstances = new Animal[animalPrefabs.Length];
 
-			int iA = 0;
-			foreach (var animal in animalPrefabs)
-			{
-				animalsInstances[iA] = Instantiate(animal);
-				animalsInstances[iA].gameObject.SetActive(false);
-				iA++;
-			}
-		}
+	//		int iA = 0;
+	//		foreach (var animal in animalPrefabs)
+	//		{
+	//			animalsInstances[iA] = Instantiate(animal);
+	//			animalsInstances[iA].gameObject.SetActive(false);
+	//			iA++;
+	//		}
+	//	}
 		
-		if (selectedAnimals == null)
-			selectedAnimals = new List<AnimalThinker>();
+	//	if (selectedAnimals == null)
+	//		selectedAnimals = new List<Animal>();
 
-		selectedAnimals.Clear();
+	//	selectedAnimals.Clear();
 
-		for (int i = animalsInstances.Length - 1; i > 0; i--)
-		{
-			int randomIndex = UnityEngine.Random.Range(0, i + 1);
-			var temp = animalsInstances[i];
-			animalsInstances[i] = animalsInstances[randomIndex];
-			animalsInstances[randomIndex] = temp;
-		}
+	//	for (int i = animalsInstances.Length - 1; i > 0; i--)
+	//	{
+	//		int randomIndex = Random.Range(0, i + 1);
+	//		var temp = animalsInstances[i];
+	//		animalsInstances[i] = animalsInstances[randomIndex];
+	//		animalsInstances[randomIndex] = temp;
+	//	}
 
-		selectedAnimals = animalsInstances.Take(5).ToList();
+	//	selectedAnimals = animalsInstances.Take(5).ToList();
 
-		animalDropped = selectedAnimals[Random.Range(0, 5)];
-
-		//int iPoint = 0;
-		//foreach (var animal in selectedAnimals)
-		//{
-		//	// Better make a method like animal.MakeInvisible()
-		//	animal.gameObject.transform.position = animalPositions[iPoint];
-		//	animal.gameObject.transform.localScale = new Vector3(0, 0, 0);
-		//	iPoint++;
-		//}
-	}
+	//	animalCurrent = selectedAnimals[Random.Range(0, 5)];
+	//}
 
 	private Vector3[] calculatePositionsBetween(Vector3 a, Vector3 b, int n)
 	{
@@ -126,8 +155,8 @@ public class AnimalManager : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;
-		Gizmos.DrawSphere(animalPointA.position, 0.1f);
+		Gizmos.DrawSphere(animalPositionBase.position, 0.1f);
 		Gizmos.color = Color.green;
-		Gizmos.DrawSphere(animalPointB.position, 0.1f);
+		Gizmos.DrawSphere(animalPositionScene.position, 0.1f);
 	}
 }
